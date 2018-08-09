@@ -16,6 +16,7 @@
  */
 package org.thoughtcrime.securesms.jobmanager;
 
+import org.thoughtcrime.securesms.jobmanager.requirements.NetworkBackoffRequirement;
 import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
 import org.thoughtcrime.securesms.jobmanager.requirements.Requirement;
 import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
@@ -73,7 +74,10 @@ public class JobParameters implements Serializable {
     if (requirements == null || requirements.size() == 0) return false;
 
     for (Requirement requirement : requirements) {
-      if (requirement instanceof NetworkRequirement || requirement instanceof NetworkOrServiceRequirement) {
+      if (requirement instanceof NetworkRequirement          ||
+          requirement instanceof NetworkOrServiceRequirement ||
+          requirement instanceof NetworkBackoffRequirement)
+      {
         return true;
       }
     }

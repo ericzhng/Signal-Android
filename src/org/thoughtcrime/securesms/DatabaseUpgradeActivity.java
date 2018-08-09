@@ -314,11 +314,14 @@ public class DatabaseUpgradeActivity extends BaseActivity {
       }
 
       if (params[0] < WORKMANAGER_MIGRATION) {
+        Log.i(TAG, "Beginning migration of existing jobs to WorkManager");
+
         JobManager        jobManager = ApplicationContext.getInstance(getApplicationContext()).getJobManager();
         PersistentStorage storage    = new PersistentStorage(getApplicationContext(), "TextSecureJobs", new JavaJobSerializer());
 
         for (Job job : storage.getAllUnencrypted()) {
           jobManager.add(job);
+          Log.i(TAG, "Migrated job with class '" + job.getClass().getSimpleName() + "' to run on new JobManager.");
         }
       }
 

@@ -7,11 +7,14 @@ import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.jobmanager.dependencies.ContextDependent;
 import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
 import org.thoughtcrime.securesms.jobs.requirements.SqlCipherMigrationRequirement;
+import org.thoughtcrime.securesms.logging.Log;
 
 import androidx.work.Data;
 import androidx.work.Worker;
 
 public abstract class Job extends Worker {
+
+  private static final String TAG = Job.class.getSimpleName();
 
   static final String KEY_RETRY_COUNT            = "Job_retry_count";
   static final String KEY_RETRY_UNTIL            = "Job_retry_until";
@@ -44,12 +47,14 @@ public abstract class Job extends Worker {
           return retry();
         }
       } else {
+        Log.w(TAG, "Failing a job that hit its retry limit. Class: " + getClass().getSimpleName());
         return cancel();
       }
     } catch (Exception e) {
       if (onShouldRetry(e)) {
         return retry();
       }
+      Log.w(TAG, "Received an exception that caused a job to fail. Class: " + getClass().getSimpleName(), e);
       return cancel();
     }
   }
@@ -73,20 +78,19 @@ public abstract class Job extends Worker {
    * Called after a run has finished and we've determined a retry is required, but before the next
    * attempt is run.
    */
-  protected void onRetry() {
-
-  }
+  protected void onRetry() { }
 
   /**
-   * Called after a job has been added to the JobManager queue.
+   * Called after a job has been added to the JobManager queue. Invoked off the main thread, so its
+   * safe to do longer-running work. However, work should finish relatively quickly, as it will
+   * block the submission of future tasks.
    */
-  protected void onAdded() {
-
-  }
+  protected void onAdded() { }
 
   /**
-   * TODO
-   * @param data
+   * Restore all of your instance state from the provided {@link Data}. It should contain all of
+   * the data put in during {@link #serialize(Data.Builder)}.
+   * @param data Where your data is stored.
    */
   protected void initialize(Data data) { }
 
