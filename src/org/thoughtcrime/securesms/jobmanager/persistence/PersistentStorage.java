@@ -41,16 +41,16 @@ public class PersistentStorage {
   private static final String DATABASE_CREATE = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s TEXT NOT NULL, %s INTEGER DEFAULT 0);",
                                                               TABLE_NAME, ID, ITEM, ENCRYPTED);
 
-  private final Context                     context;
-  private final DatabaseHelper              databaseHelper;
-  private final JobSerializer               jobSerializer;
+  private final DatabaseHelper databaseHelper;
+  private final JobSerializer  jobSerializer;
 
-  public PersistentStorage(Context context, String name,
-                           JobSerializer serializer)
-  {
+  public PersistentStorage(Context context, String name, JobSerializer serializer) {
     this.databaseHelper     = new DatabaseHelper(context, "_jobqueue-" + name);
-    this.context            = context;
     this.jobSerializer      = serializer;
+  }
+
+  public List<Job> getAllUnencrypted() {
+    return getJobs(null, ENCRYPTED + " = 0");
   }
 
   private List<Job> getJobs(EncryptionKeys keys, String where) {
