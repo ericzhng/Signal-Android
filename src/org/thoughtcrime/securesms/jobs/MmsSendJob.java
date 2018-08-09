@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.text.TextUtils;
 import org.thoughtcrime.securesms.logging.Log;
 import android.webkit.MimeTypeMap;
@@ -49,28 +50,41 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.work.Data;
+
 public class MmsSendJob extends SendJob {
 
   private static final long serialVersionUID = 0L;
 
   private static final String TAG = MmsSendJob.class.getSimpleName();
 
-  private final long messageId;
+  private static final String KEY_MESSAGE_ID = "message_id";
+
+  private long messageId;
+
+  @Keep
+  public MmsSendJob() {
+    super(null, null);
+  }
 
   public MmsSendJob(Context context, long messageId) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId("mms-operation")
                                 .withRequirement(new NetworkRequirement(context))
                                 .withRequirement(new MasterSecretRequirement(context))
-                                .withPersistence()
                                 .create());
 
     this.messageId = messageId;
   }
 
   @Override
-  public void onAdded() {
-    Log.i(TAG, "onAdded() messageId: " + messageId);
+  protected void initialize(Data data) {
+    messageId = data.getLong(KEY_MESSAGE_ID, -1);
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    return dataBuilder.putLong(KEY_MESSAGE_ID, messageId).build();
   }
 
   @Override

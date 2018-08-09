@@ -1,6 +1,8 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
+import android.support.annotation.Keep;
+
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
@@ -26,19 +28,38 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import androidx.work.Data;
+
 public class PushTextSendJob extends PushSendJob implements InjectableType {
 
   private static final long serialVersionUID = 1L;
 
   private static final String TAG = PushTextSendJob.class.getSimpleName();
 
+  private static final String KEY_MESSAGE_ID = "message_id";
+
   @Inject transient SignalServiceMessageSender messageSender;
 
-  private final long messageId;
+  private long messageId;
+
+  @Keep
+  public PushTextSendJob() {
+    super(null, null);
+  }
 
   public PushTextSendJob(Context context, long messageId, Address destination) {
     super(context, constructParameters(context, destination));
     this.messageId = messageId;
+  }
+
+  @Override
+  protected void initialize(Data data) {
+    messageId = data.getLong(KEY_MESSAGE_ID, messageId);
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    return dataBuilder.putLong(KEY_MESSAGE_ID, messageId).build();
   }
 
   @Override

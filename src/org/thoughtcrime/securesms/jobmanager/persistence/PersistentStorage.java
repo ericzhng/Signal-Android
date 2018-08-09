@@ -59,12 +59,6 @@ public class PersistentStorage {
   }
 
   public void store(Job job) throws IOException {
-    ContentValues contentValues = new ContentValues();
-    contentValues.put(ITEM, jobSerializer.serialize(job));
-    contentValues.put(ENCRYPTED, job.getEncryptionKeys() != null);
-
-    long id = databaseHelper.getWritableDatabase().insert(TABLE_NAME, null, contentValues);
-    job.setPersistentId(id);
   }
 
   public List<Job> getAllUnencrypted() {
@@ -91,8 +85,6 @@ public class PersistentStorage {
         try{
           Job job = jobSerializer.deserialize(keys, encrypted, item);
 
-          job.setPersistentId(id);
-          job.setEncryptionKeys(keys);
           dependencyInjector.injectDependencies(context, job);
 
           results.add(job);

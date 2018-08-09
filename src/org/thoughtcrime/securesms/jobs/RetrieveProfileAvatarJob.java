@@ -2,7 +2,10 @@ package org.thoughtcrime.securesms.jobs;
 
 
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.text.TextUtils;
+
+import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.database.DatabaseFactory;
@@ -23,16 +26,26 @@ import java.io.InputStream;
 
 import javax.inject.Inject;
 
+import androidx.work.Data;
+
 public class RetrieveProfileAvatarJob extends ContextJob implements InjectableType {
 
   private static final String TAG = RetrieveProfileAvatarJob.class.getSimpleName();
 
   private static final int MAX_PROFILE_SIZE_BYTES = 20 * 1024 * 1024;
 
+  private static final String KEY_PROFILE_AVATAR = "profile_avatar";
+  private static final String KEY_ADDRESS        = "address";
+
   @Inject SignalServiceMessageReceiver receiver;
 
-  private final String    profileAvatar;
-  private final Recipient recipient;
+  private String    profileAvatar;
+  private Recipient recipient;
+
+  @Keep
+  public RetrieveProfileAvatarJob() {
+    super(null, null);
+  }
 
   public RetrieveProfileAvatarJob(Context context, Recipient recipient, String profileAvatar) {
     super(context, JobParameters.newBuilder()
@@ -45,7 +58,17 @@ public class RetrieveProfileAvatarJob extends ContextJob implements InjectableTy
   }
 
   @Override
-  public void onAdded() {}
+  protected void initialize(Data data) {
+    profileAvatar = data.getString(KEY_PROFILE_AVATAR);
+    recipient     = Recipient.from(context, Address.fromSerialized(data.getString(KEY_ADDRESS)), true);
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    return dataBuilder.putString(KEY_PROFILE_AVATAR, profileAvatar)
+                      .putString(KEY_ADDRESS, recipient.getAddress().serialize())
+                      .build();
+  }
 
   @Override
   public void onRun() throws IOException {

@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.jobs;
 
 import android.Manifest;
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -30,15 +31,16 @@ public class LocalBackupJob extends ContextJob {
 
   private static final String TAG = LocalBackupJob.class.getSimpleName();
 
+  @Keep
+  public LocalBackupJob() {
+    super(null, null);
+  }
+
   public LocalBackupJob(@NonNull Context context) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId("__LOCAL_BACKUP__")
-                                .withWakeLock(true, 10, TimeUnit.SECONDS)
                                 .create());
   }
-
-  @Override
-  public void onAdded() {}
 
   @Override
   public void onRun() throws NoExternalStorageException, IOException {

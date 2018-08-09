@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.telephony.SmsMessage;
@@ -14,11 +15,15 @@ import org.thoughtcrime.securesms.jobs.requirements.SqlCipherMigrationRequiremen
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.IncomingTextMessage;
+import org.thoughtcrime.securesms.util.Base64;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.util.guava.Optional;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+
+import androidx.work.Data;
 
 public class SmsReceiveJob extends ContextJob {
 
@@ -26,13 +31,19 @@ public class SmsReceiveJob extends ContextJob {
 
   private static final String TAG = SmsReceiveJob.class.getSimpleName();
 
-  private final @Nullable Object[] pdus;
-  private final int      subscriptionId;
+  private static final String KEY_PDUS            = "pdus";
+  private static final String KEY_SUBSCRIPTION_ID = "subscription_id";
+
+  private @Nullable Object[] pdus;
+  private int      subscriptionId;
+
+  @Keep
+  public SmsReceiveJob() {
+    super(null, null);
+  }
 
   public SmsReceiveJob(@NonNull Context context, @Nullable Object[] pdus, int subscriptionId) {
     super(context, JobParameters.newBuilder()
-                                .withPersistence()
-                                .withWakeLock(true)
                                 .withRequirement(new SqlCipherMigrationRequirement(context))
                                 .create());
 
@@ -41,7 +52,31 @@ public class SmsReceiveJob extends ContextJob {
   }
 
   @Override
-  public void onAdded() {}
+  protected void initialize(Data data) {
+    String[] encoded = data.getStringArray(KEY_PDUS);
+    pdus = new Object[encoded.length];
+    try {
+      for (int i = 0; i < encoded.length; i++) {
+        pdus[i] = Base64.decode(encoded[i]);
+      }
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+
+    subscriptionId = data.getInt(KEY_SUBSCRIPTION_ID, -1);
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    String[] encoded = new String[pdus.length];
+    for (int i = 0; i < pdus.length; i++) {
+      encoded[i] = Base64.encodeBytes((byte[]) pdus[i]);
+    }
+
+    return dataBuilder.putStringArray(KEY_PDUS, encoded)
+                      .putInt(KEY_SUBSCRIPTION_ID, subscriptionId)
+                      .build();
+  }
 
   @Override
   public void onRun() throws MigrationPendingException {

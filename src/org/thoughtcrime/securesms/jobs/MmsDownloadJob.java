@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -47,28 +48,52 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import androidx.work.Data;
+
 public class MmsDownloadJob extends MasterSecretJob {
 
   private static final long serialVersionUID = 1L;
 
   private static final String TAG = MmsDownloadJob.class.getSimpleName();
 
-  private final long    messageId;
-  private final long    threadId;
-  private final boolean automatic;
+  private static final String KEY_MESSAGE_ID = "message_id";
+  private static final String KEY_THREAD_ID  = "thread_id";
+  private static final String KEY_AUTOMATIC  = "automatci";
+
+  private long    messageId;
+  private long    threadId;
+  private boolean automatic;
+
+  @Keep
+  public MmsDownloadJob() {
+    super(null, null);
+  }
 
   public MmsDownloadJob(Context context, long messageId, long threadId, boolean automatic) {
     super(context, JobParameters.newBuilder()
-                                .withPersistence()
                                 .withRequirement(new MasterSecretRequirement(context))
                                 .withRequirement(new NetworkRequirement(context))
                                 .withGroupId("mms-operation")
-                                .withWakeLock(true, 30, TimeUnit.SECONDS)
                                 .create());
 
     this.messageId = messageId;
     this.threadId  = threadId;
     this.automatic = automatic;
+  }
+
+  @Override
+  protected void initialize(Data data) {
+    messageId = data.getLong(KEY_MESSAGE_ID, -1);
+    threadId  = data.getLong(KEY_THREAD_ID, -1);
+    automatic = data.getBoolean(KEY_AUTOMATIC, false);
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    return dataBuilder.putLong(KEY_MESSAGE_ID, messageId)
+                      .putLong(KEY_THREAD_ID, threadId)
+                      .putBoolean(KEY_AUTOMATIC, automatic)
+                      .build();
   }
 
   @Override

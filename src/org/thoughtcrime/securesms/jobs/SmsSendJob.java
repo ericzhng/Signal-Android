@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.Keep;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
 import org.thoughtcrime.securesms.logging.Log;
@@ -27,16 +28,34 @@ import org.thoughtcrime.securesms.jobmanager.JobParameters;
 
 import java.util.ArrayList;
 
+import androidx.work.Data;
+
 public class SmsSendJob extends SendJob {
 
   private static final long   serialVersionUID = -5118520036244759718L;
   private static final String TAG              = SmsSendJob.class.getSimpleName();
+  private static final String KEY_MESSAGE_ID   = "message_id";
 
-  private final long messageId;
+  private long messageId;
+
+  @Keep
+  public SmsSendJob() {
+    super(null, null);
+  }
 
   public SmsSendJob(Context context, long messageId, String name) {
     super(context, constructParameters(context, name));
     this.messageId = messageId;
+  }
+
+  @Override
+  protected void initialize(Data data) {
+    messageId = data.getLong(KEY_MESSAGE_ID, -1);
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    return dataBuilder.putLong(KEY_MESSAGE_ID, messageId).build();
   }
 
   @Override
@@ -192,7 +211,6 @@ public class SmsSendJob extends SendJob {
 
   private static JobParameters constructParameters(Context context, String name) {
     JobParameters.Builder builder = JobParameters.newBuilder()
-                                                 .withPersistence()
                                                  .withRequirement(new MasterSecretRequirement(context))
                                                  .withRetryCount(15)
                                                  .withGroupId(name);

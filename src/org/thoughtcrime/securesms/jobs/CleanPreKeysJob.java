@@ -1,6 +1,8 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
+import android.support.annotation.Keep;
+
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.crypto.MasterSecret;
@@ -35,17 +37,17 @@ public class CleanPreKeysJob extends MasterSecretJob implements InjectableType {
   @Inject transient SignalServiceAccountManager accountManager;
   @Inject transient SignedPreKeyStoreFactory signedPreKeyStoreFactory;
 
+  @Keep
+  public CleanPreKeysJob() {
+    super(null, null);
+  }
+
   public CleanPreKeysJob(Context context) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(CleanPreKeysJob.class.getSimpleName())
                                 .withRequirement(new MasterSecretRequirement(context))
                                 .withRetryCount(5)
                                 .create());
-  }
-
-  @Override
-  public void onAdded() {
-
   }
 
   @Override

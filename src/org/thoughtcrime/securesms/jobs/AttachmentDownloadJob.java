@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import org.thoughtcrime.securesms.logging.Log;
@@ -36,24 +37,35 @@ import java.io.InputStream;
 
 import javax.inject.Inject;
 
+import androidx.work.Data;
+
 public class AttachmentDownloadJob extends MasterSecretJob implements InjectableType {
   private static final long   serialVersionUID    = 2L;
   private static final int    MAX_ATTACHMENT_SIZE = 150 * 1024  * 1024;
   private static final String TAG                  = AttachmentDownloadJob.class.getSimpleName();
 
+  private static final String KEY_MESSAGE_ID    = "message_id";
+  private static final String KEY_PART_ROW_ID   = "part_row_id";
+  private static final String KEY_PAR_UNIQUE_ID = "part_unique_id";
+  private static final String KEY_MANUAL        = "part_manual";
+
   @Inject transient SignalServiceMessageReceiver messageReceiver;
 
-  private final long    messageId;
-  private final long    partRowId;
-  private final long    partUniqueId;
-  private final boolean manual;
+  private long    messageId;
+  private long    partRowId;
+  private long    partUniqueId;
+  private boolean manual;
+
+  @Keep
+  public AttachmentDownloadJob() {
+    super(null, null);
+  }
 
   public AttachmentDownloadJob(Context context, long messageId, AttachmentId attachmentId, boolean manual) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(AttachmentDownloadJob.class.getCanonicalName())
                                 .withRequirement(new MasterSecretRequirement(context))
                                 .withRequirement(new NetworkRequirement(context))
-                                .withPersistence()
                                 .create());
 
     this.messageId    = messageId;
@@ -63,8 +75,20 @@ public class AttachmentDownloadJob extends MasterSecretJob implements Injectable
   }
 
   @Override
-  public void onAdded() {
-    Log.i(TAG, "onAdded() messageId: " + messageId + "  partRowId: " + partRowId + "  partUniqueId: " + partUniqueId + "  manual: " + manual);
+  protected void initialize(Data data) {
+    messageId    = data.getLong(KEY_MESSAGE_ID, -1);
+    partRowId    = data.getLong(KEY_PART_ROW_ID, -1);
+    partUniqueId = data.getLong(KEY_PAR_UNIQUE_ID, -1);
+    manual       = data.getBoolean(KEY_MANUAL, false);
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    return dataBuilder.putLong(KEY_MESSAGE_ID, messageId)
+                      .putLong(KEY_PART_ROW_ID, partRowId)
+                      .putLong(KEY_PAR_UNIQUE_ID, partUniqueId)
+                      .putBoolean(KEY_MANUAL, manual)
+                      .build();
   }
 
   @Override

@@ -17,29 +17,44 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
+import org.thoughtcrime.securesms.jobmanager.dependencies.ContextDependent;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
-public class TrimThreadJob extends Job {
+import androidx.work.Data;
+
+public class TrimThreadJob extends ContextJob {
 
   private static final String TAG = TrimThreadJob.class.getSimpleName();
 
-  private final Context context;
-  private final long    threadId;
+  private static final String KEY_THREAD_ID = "thread_id";
+
+  private long threadId;
+
+  @Keep
+  public TrimThreadJob() {
+    super(null, null);
+  }
 
   public TrimThreadJob(Context context, long threadId) {
-    super(JobParameters.newBuilder().withGroupId(TrimThreadJob.class.getSimpleName()).create());
+    super(context, JobParameters.newBuilder().withGroupId(TrimThreadJob.class.getSimpleName()).create());
     this.context  = context;
     this.threadId = threadId;
   }
 
   @Override
-  public void onAdded() {
+  protected void initialize(Data data) {
+    threadId = data.getLong(KEY_THREAD_ID, -1);
+  }
 
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    return dataBuilder.putLong(KEY_THREAD_ID, threadId).build();
   }
 
   @Override

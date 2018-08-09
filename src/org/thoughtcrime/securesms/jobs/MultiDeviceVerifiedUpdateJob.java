@@ -2,6 +2,8 @@ package org.thoughtcrime.securesms.jobs;
 
 
 import android.content.Context;
+import android.support.annotation.Keep;
+
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.database.Address;
@@ -9,6 +11,7 @@ import org.thoughtcrime.securesms.database.IdentityDatabase.VerifiedStatus;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
 import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
+import org.thoughtcrime.securesms.util.Base64;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.InvalidKeyException;
@@ -22,24 +25,35 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import androidx.work.Data;
+
 public class MultiDeviceVerifiedUpdateJob extends ContextJob implements InjectableType {
 
   private static final long serialVersionUID = 1L;
 
   private static final String TAG = MultiDeviceVerifiedUpdateJob.class.getSimpleName();
 
+  private static final String KEY_DESTINATION     = "destination";
+  private static final String KEY_IDENTITY_KEY    = "identity_key";
+  private static final String KEY_VERIFIED_STATUS = "verified_status";
+  private static final String KEY_TIMESTAMP       = "timestamp";
+
   @Inject
   transient SignalServiceMessageSender messageSender;
 
-  private final String         destination;
-  private final byte[]         identityKey;
-  private final VerifiedStatus verifiedStatus;
-  private final long           timestamp;
+  private String         destination;
+  private byte[]         identityKey;
+  private VerifiedStatus verifiedStatus;
+  private long           timestamp;
+
+  @Keep
+  public MultiDeviceVerifiedUpdateJob() {
+    super(null, null);
+  }
 
   public MultiDeviceVerifiedUpdateJob(Context context, Address destination, IdentityKey identityKey, VerifiedStatus verifiedStatus) {
     super(context, JobParameters.newBuilder()
                                 .withRequirement(new NetworkRequirement(context))
-                                .withPersistence()
                                 .withGroupId("__MULTI_DEVICE_VERIFIED_UPDATE__")
                                 .create());
 
@@ -47,6 +61,28 @@ public class MultiDeviceVerifiedUpdateJob extends ContextJob implements Injectab
     this.identityKey    = identityKey.serialize();
     this.verifiedStatus = verifiedStatus;
     this.timestamp      = System.currentTimeMillis();
+  }
+
+  @Override
+  protected void initialize(Data data) {
+    destination    = data.getString(KEY_DESTINATION);
+    verifiedStatus = VerifiedStatus.forState(data.getInt(KEY_VERIFIED_STATUS, 0));
+    timestamp      = data.getLong(KEY_TIMESTAMP, 0);
+
+    try {
+      identityKey = Base64.decode(data.getString(KEY_IDENTITY_KEY));
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    return dataBuilder.putString(KEY_DESTINATION, destination)
+                      .putString(KEY_IDENTITY_KEY, Base64.encodeBytes(identityKey))
+                      .putInt(KEY_VERIFIED_STATUS, verifiedStatus.toInt())
+                      .putLong(KEY_TIMESTAMP, timestamp)
+                      .build();
   }
 
   @Override
@@ -88,11 +124,6 @@ public class MultiDeviceVerifiedUpdateJob extends ContextJob implements Injectab
   @Override
   public boolean onShouldRetry(Exception exception) {
     return exception instanceof PushNetworkException;
-  }
-
-  @Override
-  public void onAdded() {
-
   }
 
   @Override

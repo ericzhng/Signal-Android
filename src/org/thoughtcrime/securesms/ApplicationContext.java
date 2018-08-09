@@ -164,16 +164,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
   }
 
   private void initializeJobManager() {
-    this.jobManager = JobManager.newBuilder(this)
-                                .withName("TextSecureJobs")
-                                .withDependencyInjector(this)
-                                .withJobSerializer(new JavaJobSerializer())
-                                .withRequirementProviders(new MasterSecretRequirementProvider(this),
-                                                          new ServiceRequirementProvider(this),
-                                                          new NetworkRequirementProvider(this),
-                                                          new SqlCipherMigrationRequirementProvider())
-                                .withConsumerThreads(5)
-                                .build();
+    this.jobManager = new JobManager();
   }
 
   private void initializeDependencyInjection() {

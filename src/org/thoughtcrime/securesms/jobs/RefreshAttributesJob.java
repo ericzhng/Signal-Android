@@ -1,6 +1,8 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
+import android.support.annotation.Keep;
+
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.dependencies.InjectableType;
@@ -23,17 +25,17 @@ public class RefreshAttributesJob extends ContextJob implements InjectableType {
 
   @Inject transient SignalServiceAccountManager signalAccountManager;
 
+  @Keep
+  public RefreshAttributesJob() {
+    super(null, null);
+  }
+
   public RefreshAttributesJob(Context context) {
     super(context, JobParameters.newBuilder()
-                                .withPersistence()
                                 .withRequirement(new NetworkRequirement(context))
-                                .withWakeLock(true, 30, TimeUnit.SECONDS)
                                 .withGroupId(RefreshAttributesJob.class.getName())
                                 .create());
   }
-
-  @Override
-  public void onAdded() {}
 
   @Override
   public void onRun() throws IOException {

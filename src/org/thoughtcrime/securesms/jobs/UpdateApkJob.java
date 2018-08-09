@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -36,17 +37,18 @@ public class UpdateApkJob extends ContextJob {
 
   private static final String TAG = UpdateApkJob.class.getSimpleName();
 
+  @Keep
+  public UpdateApkJob() {
+    super(null, null);
+  }
+
   public UpdateApkJob(Context context) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(UpdateApkJob.class.getSimpleName())
                                 .withRequirement(new NetworkRequirement(context))
-                                .withWakeLock(true, 30, TimeUnit.SECONDS)
                                 .withRetryCount(2)
                                 .create());
   }
-
-  @Override
-  public void onAdded() {}
 
   @Override
   public void onRun() throws IOException, PackageManager.NameNotFoundException {

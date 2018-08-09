@@ -21,6 +21,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.support.annotation.Keep;
 import android.support.v4.app.NotificationCompat;
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -49,15 +50,17 @@ public class GcmRefreshJob extends ContextJob implements InjectableType {
 
   @Inject transient SignalServiceAccountManager textSecureAccountManager;
 
+  @Keep
+  public GcmRefreshJob() {
+    super(null, null);
+  }
+
   public GcmRefreshJob(Context context) {
     super(context, JobParameters.newBuilder()
                                 .withRequirement(new NetworkRequirement(context))
                                 .withRetryCount(1)
                                 .create());
   }
-
-  @Override
-  public void onAdded() {}
 
   @Override
   public void onRun() throws Exception {

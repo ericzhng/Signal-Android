@@ -32,6 +32,10 @@ public class RefreshPreKeysJob extends MasterSecretJob implements InjectableType
 
   @Inject transient SignalServiceAccountManager accountManager;
 
+  public RefreshPreKeysJob() {
+    super(null, null);
+  }
+
   public RefreshPreKeysJob(Context context) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(RefreshPreKeysJob.class.getSimpleName())
@@ -39,11 +43,6 @@ public class RefreshPreKeysJob extends MasterSecretJob implements InjectableType
                                 .withRequirement(new MasterSecretRequirement(context))
                                 .withRetryCount(5)
                                 .create());
-  }
-
-  @Override
-  public void onAdded() {
-
   }
 
   @Override

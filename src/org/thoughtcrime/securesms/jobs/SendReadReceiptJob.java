@@ -16,9 +16,12 @@ import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 import org.whispersystems.signalservice.api.push.exceptions.PushNetworkException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import androidx.work.Data;
 
 public class SendReadReceiptJob extends ContextJob implements InjectableType {
 
@@ -26,16 +29,23 @@ public class SendReadReceiptJob extends ContextJob implements InjectableType {
 
   private static final String TAG = SendReadReceiptJob.class.getSimpleName();
 
+  private static final String KEY_ADDRESS     = "address";
+  private static final String KEY_MESSAGE_IDS = "message_ids";
+  private static final String KEY_TIMESTAMP   = "message_ids";
+
   @Inject transient SignalServiceMessageSender messageSender;
 
-  private final String     address;
-  private final List<Long> messageIds;
-  private final long       timestamp;
+  private String     address;
+  private List<Long> messageIds;
+  private long       timestamp;
+
+  public SendReadReceiptJob() {
+    super(null, null);
+  }
 
   public SendReadReceiptJob(Context context, Address address, List<Long> messageIds) {
     super(context, JobParameters.newBuilder()
                                 .withRequirement(new NetworkRequirement(context))
-                                .withPersistence()
                                 .create());
 
     this.address    = address.serialize();
@@ -44,7 +54,29 @@ public class SendReadReceiptJob extends ContextJob implements InjectableType {
   }
 
   @Override
-  public void onAdded() {}
+  protected void initialize(Data data) {
+    address   = data.getString(KEY_ADDRESS);
+    timestamp = data.getLong(KEY_TIMESTAMP, 0);
+
+    long[] ids = data.getLongArray(KEY_MESSAGE_IDS);
+    messageIds = new ArrayList<>(ids.length);
+    for (long id : ids) {
+      messageIds.add(id);
+    }
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    long[] ids = new long[messageIds.size()];
+    for (int i = 0; i < ids.length; i++) {
+      ids[i] = messageIds.get(i);
+    }
+
+    return dataBuilder.putString(KEY_ADDRESS, address)
+                      .putLongArray(KEY_MESSAGE_IDS, ids)
+                      .putLong(KEY_TIMESTAMP, timestamp)
+                      .build();
+  }
 
   @Override
   public void onRun() throws IOException, UntrustedIdentityException {

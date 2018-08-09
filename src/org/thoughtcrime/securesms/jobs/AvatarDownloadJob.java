@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import org.thoughtcrime.securesms.crypto.MasterSecret;
@@ -30,6 +31,8 @@ import java.io.InputStream;
 
 import javax.inject.Inject;
 
+import androidx.work.Data;
+
 public class AvatarDownloadJob extends MasterSecretJob implements InjectableType {
 
   private static final int MAX_AVATAR_SIZE = 20 * 1024 * 1024;
@@ -37,22 +40,39 @@ public class AvatarDownloadJob extends MasterSecretJob implements InjectableType
 
   private static final String TAG = AvatarDownloadJob.class.getSimpleName();
 
+  private static final String KEY_GROUP_ID = "group_id";
+
   @Inject transient SignalServiceMessageReceiver receiver;
 
-  private final byte[] groupId;
+  private byte[] groupId;
+
+  @Keep
+  public AvatarDownloadJob() {
+    super(null, null);
+  }
 
   public AvatarDownloadJob(Context context, @NonNull byte[] groupId) {
     super(context, JobParameters.newBuilder()
                                 .withRequirement(new MasterSecretRequirement(context))
                                 .withRequirement(new NetworkRequirement(context))
-                                .withPersistence()
                                 .create());
 
     this.groupId = groupId;
   }
 
   @Override
-  public void onAdded() {}
+  protected void initialize(Data data) {
+    try {
+      groupId = GroupUtil.getDecodedId(data.getString(KEY_GROUP_ID));
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  @Override
+  protected Data serialize(Data.Builder dataBuilder) {
+    return dataBuilder.putString(KEY_GROUP_ID, GroupUtil.getEncodedId(groupId, false)).build();
+  }
 
   @Override
   public void onRun(MasterSecret masterSecret) throws IOException {

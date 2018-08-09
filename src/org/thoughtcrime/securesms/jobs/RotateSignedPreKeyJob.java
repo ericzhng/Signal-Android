@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.jobs;
 
 
 import android.content.Context;
+import android.support.annotation.Keep;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.crypto.IdentityKeyUtil;
@@ -26,17 +27,17 @@ public class RotateSignedPreKeyJob extends MasterSecretJob implements Injectable
 
   @Inject transient SignalServiceAccountManager accountManager;
 
+  @Keep
+  public RotateSignedPreKeyJob() {
+    super(null, null);
+  }
+
   public RotateSignedPreKeyJob(Context context) {
     super(context, JobParameters.newBuilder()
                                 .withRequirement(new NetworkRequirement(context))
                                 .withRequirement(new MasterSecretRequirement(context))
                                 .withRetryCount(5)
                                 .create());
-  }
-
-  @Override
-  public void onAdded() {
-
   }
 
   @Override

@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 
 import org.greenrobot.eventbus.EventBus;
 import org.thoughtcrime.securesms.BuildConfig;
@@ -21,6 +22,11 @@ public class ServiceOutageDetectionJob extends ContextJob {
   private static final String IP_SUCCESS = "127.0.0.1";
   private static final String IP_FAILURE = "127.0.0.2";
   private static final long   CHECK_TIME = 1000 * 60;
+
+  @Keep
+  public ServiceOutageDetectionJob() {
+    super(null, null);
+  }
 
   public ServiceOutageDetectionJob(Context context) {
     super(context, new JobParameters.Builder()

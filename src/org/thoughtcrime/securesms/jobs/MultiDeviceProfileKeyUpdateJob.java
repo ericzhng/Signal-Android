@@ -2,6 +2,8 @@ package org.thoughtcrime.securesms.jobs;
 
 
 import android.content.Context;
+import android.support.annotation.Keep;
+
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.crypto.MasterSecret;
@@ -34,10 +36,14 @@ public class MultiDeviceProfileKeyUpdateJob extends MasterSecretJob implements I
 
   @Inject transient SignalServiceMessageSender messageSender;
 
+  @Keep
+  public MultiDeviceProfileKeyUpdateJob() {
+    super(null, null);
+  }
+
   public MultiDeviceProfileKeyUpdateJob(Context context) {
     super(context, JobParameters.newBuilder()
                                 .withRequirement(new NetworkRequirement(context))
-                                .withPersistence()
                                 .withGroupId(MultiDeviceProfileKeyUpdateJob.class.getSimpleName())
                                 .create());
   }
@@ -77,11 +83,6 @@ public class MultiDeviceProfileKeyUpdateJob extends MasterSecretJob implements I
   public boolean onShouldRetryThrowable(Exception exception) {
     if (exception instanceof PushNetworkException) return true;
     return false;
-  }
-
-  @Override
-  public void onAdded() {
-
   }
 
   @Override
