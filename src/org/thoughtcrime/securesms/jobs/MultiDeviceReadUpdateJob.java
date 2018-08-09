@@ -49,8 +49,8 @@ public class MultiDeviceReadUpdateJob extends MasterSecretJob implements Injecta
 
   public MultiDeviceReadUpdateJob(Context context, List<SyncMessageId> messageIds) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withNetworkRequirement()
+                                .withMasterSecretRequirement()
                                 .create());
 
     this.messageIds = new LinkedList<>();

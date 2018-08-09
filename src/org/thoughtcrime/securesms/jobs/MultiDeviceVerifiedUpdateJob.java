@@ -53,7 +53,7 @@ public class MultiDeviceVerifiedUpdateJob extends ContextJob implements Injectab
 
   public MultiDeviceVerifiedUpdateJob(Context context, Address destination, IdentityKey identityKey, VerifiedStatus verifiedStatus) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .withGroupId("__MULTI_DEVICE_VERIFIED_UPDATE__")
                                 .create());
 

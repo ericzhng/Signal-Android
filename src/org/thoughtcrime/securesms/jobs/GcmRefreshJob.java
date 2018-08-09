@@ -57,7 +57,7 @@ public class GcmRefreshJob extends ContextJob implements InjectableType {
 
   public GcmRefreshJob(Context context) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .withRetryCount(1)
                                 .create());
   }

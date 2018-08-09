@@ -73,7 +73,7 @@ public class PushGroupSendJob extends PushSendJob implements InjectableType {
   public PushGroupSendJob(Context context, long messageId, @NonNull Address destination, @Nullable Address filterAddress) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(destination.toGroupString())
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withMasterSecretRequirement()
                                 .withRetryDuration(TimeUnit.DAYS.toMillis(1))
                                 .create());
 

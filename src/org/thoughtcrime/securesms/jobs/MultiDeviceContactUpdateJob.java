@@ -89,8 +89,8 @@ public class MultiDeviceContactUpdateJob extends MasterSecretJob implements Inje
 
   public MultiDeviceContactUpdateJob(@NonNull Context context, @Nullable Address address, boolean forceSync) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withNetworkRequirement()
+                                .withMasterSecretRequirement()
                                 .withGroupId(MultiDeviceContactUpdateJob.class.getSimpleName())
                                 .create());
 

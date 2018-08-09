@@ -31,7 +31,7 @@ public class ServiceOutageDetectionJob extends ContextJob {
   public ServiceOutageDetectionJob(Context context) {
     super(context, new JobParameters.Builder()
                                     .withGroupId(ServiceOutageDetectionJob.class.getSimpleName())
-                                    .withRequirement(new NetworkRequirement(context))
+                                    .withNetworkRequirement()
                                     .withRetryCount(5)
                                     .create());
   }

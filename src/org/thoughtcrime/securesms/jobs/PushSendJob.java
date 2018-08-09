@@ -51,7 +51,7 @@ public abstract class PushSendJob extends SendJob {
   protected static JobParameters constructParameters(Context context, Address destination) {
     JobParameters.Builder builder = JobParameters.newBuilder();
     builder.withGroupId(destination.serialize());
-    builder.withRequirement(new MasterSecretRequirement(context));
+    builder.withMasterSecretRequirement();
     builder.withRetryDuration(TimeUnit.DAYS.toMillis(1));
 
     return builder.create();

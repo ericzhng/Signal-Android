@@ -71,8 +71,8 @@ public class MmsDownloadJob extends MasterSecretJob {
 
   public MmsDownloadJob(Context context, long messageId, long threadId, boolean automatic) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new MasterSecretRequirement(context))
-                                .withRequirement(new NetworkRequirement(context))
+                                .withMasterSecretRequirement()
+                                .withMasterSecretRequirement()
                                 .withGroupId("mms-operation")
                                 .create());
 

@@ -57,7 +57,7 @@ public class PushGroupUpdateJob extends ContextJob implements InjectableType {
 
   public PushGroupUpdateJob(Context context, String source, byte[] groupId) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .withRetryDuration(TimeUnit.DAYS.toMillis(1))
                                 .create());
 

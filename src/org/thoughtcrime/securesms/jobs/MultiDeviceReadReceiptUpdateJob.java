@@ -41,7 +41,7 @@ public class MultiDeviceReadReceiptUpdateJob extends ContextJob implements Injec
   public MultiDeviceReadReceiptUpdateJob(Context context, boolean enabled) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId("__MULTI_DEVICE_READ_RECEIPT_UPDATE_JOB__")
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .create());
 
     this.enabled = enabled;

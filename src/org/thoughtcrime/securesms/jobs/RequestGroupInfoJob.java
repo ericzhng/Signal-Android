@@ -43,7 +43,7 @@ public class RequestGroupInfoJob extends ContextJob implements InjectableType {
 
   public RequestGroupInfoJob(@NonNull Context context, @NonNull String source, @NonNull byte[] groupId) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .withRetryCount(50)
                                 .create());
 

@@ -64,8 +64,8 @@ public class AttachmentDownloadJob extends MasterSecretJob implements Injectable
   public AttachmentDownloadJob(Context context, long messageId, AttachmentId attachmentId, boolean manual) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(AttachmentDownloadJob.class.getCanonicalName())
-                                .withRequirement(new MasterSecretRequirement(context))
-                                .withRequirement(new NetworkRequirement(context))
+                                .withMasterSecretRequirement()
+                                .withNetworkRequirement()
                                 .create());
 
     this.messageId    = messageId;
@@ -89,6 +89,11 @@ public class AttachmentDownloadJob extends MasterSecretJob implements Injectable
                       .putLong(KEY_PAR_UNIQUE_ID, partUniqueId)
                       .putBoolean(KEY_MANUAL, manual)
                       .build();
+  }
+
+  @Override
+  public void onAdded() {
+    Log.i(TAG, "onAdded() messageId: " + messageId + "  partRowId: " + partRowId + "  partUniqueId: " + partUniqueId + "  manual: " + manual);
   }
 
   @Override

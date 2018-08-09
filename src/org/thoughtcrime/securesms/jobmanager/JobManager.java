@@ -16,18 +16,17 @@ public class JobManager {
                                                                        .setRequiredNetworkType(NetworkType.CONNECTED)
                                                                        .build();
 
-  private static final Executor executor = Executors.newSingleThreadExecutor();
+  private final Executor executor = Executors.newSingleThreadExecutor();
 
   public void add(Job job) {
     executor.execute(() -> {
       job.onAdded();
 
-      Data.Builder dataBuilder = new Data.Builder();
-      dataBuilder.putInt(Job.KEY_RETRY_COUNT, getRetryCount(job));
-      dataBuilder.putLong(Job.KEY_RETRY_UNTIL, getRetryUntil(job));
+      Data.Builder dataBuilder = new Data.Builder().putInt(Job.KEY_RETRY_COUNT, getRetryCount(job))
+                                                   .putLong(Job.KEY_RETRY_UNTIL, getRetryUntil(job))
+                                                   .putBoolean(Job.KEY_REQUIRES_MASTER_SECRET, getRequiresMasterSecret(job))
+                                                   .putBoolean(Job.KEY_REQUIRES_SQLCIPHER, getRequiresSqlCipher(job));
       Data data = job.serialize(dataBuilder);
-
-      // TODO: Need to take mastersecret and sqlcipher requirements into account, add them as fields in the data and manually check beforehand
 
       OneTimeWorkRequest.Builder requestBuilder = new OneTimeWorkRequest.Builder(job.getClass()).setInputData(data);
 
@@ -45,7 +44,6 @@ public class JobManager {
   }
 
   private int getRetryCount(Job job) {
-    // TODO: In general, maybe better to add these back as methods on Job?
     if (job.getJobParameters() != null) {
       return job.getJobParameters().getRetryCount();
     }
@@ -59,10 +57,25 @@ public class JobManager {
     return 0;
   }
 
+  private boolean getRequiresMasterSecret(Job job) {
+    if (job.getJobParameters() != null) {
+      return job.getJobParameters().requiresMasterSecret();
+    }
+    return false;
+  }
+
+  private boolean getRequiresSqlCipher(Job job) {
+    if (job.getJobParameters() != null) {
+      return job.getJobParameters().requiresSqlCipher();
+    }
+    return false;
+  }
+
   private boolean requiresNetwork(Job job) {
-    // TODO: Remove network requirements and add field to jobparams
-    // TODO: Same with other requirements -- we just want to remove them
-    return true;
+    if (job.getJobParameters() != null) {
+      return job.getJobParameters().requiresNetwork();
+    }
+    return false;
   }
 
   private String getGroupId(Job job) {

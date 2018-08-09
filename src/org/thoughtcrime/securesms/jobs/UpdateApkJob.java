@@ -45,7 +45,7 @@ public class UpdateApkJob extends ContextJob {
   public UpdateApkJob(Context context) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(UpdateApkJob.class.getSimpleName())
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .withRetryCount(2)
                                 .create());
   }

@@ -53,8 +53,8 @@ public class AvatarDownloadJob extends MasterSecretJob implements InjectableType
 
   public AvatarDownloadJob(Context context, @NonNull byte[] groupId) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new MasterSecretRequirement(context))
-                                .withRequirement(new NetworkRequirement(context))
+                                .withMasterSecretRequirement()
+                                .withNetworkRequirement()
                                 .create());
 
     this.groupId = groupId;

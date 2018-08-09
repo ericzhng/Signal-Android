@@ -34,8 +34,8 @@ public class RotateSignedPreKeyJob extends MasterSecretJob implements Injectable
 
   public RotateSignedPreKeyJob(Context context) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withNetworkRequirement()
+                                .withMasterSecretRequirement()
                                 .withRetryCount(5)
                                 .create());
   }

@@ -211,15 +211,16 @@ public class SmsSendJob extends SendJob {
 
   private static JobParameters constructParameters(Context context, String name) {
     JobParameters.Builder builder = JobParameters.newBuilder()
-                                                 .withRequirement(new MasterSecretRequirement(context))
+                                                 .withMasterSecretRequirement()
                                                  .withRetryCount(15)
                                                  .withGroupId(name);
 
-    if (TextSecurePreferences.isWifiSmsEnabled(context)) {
-      builder.withRequirement(new NetworkOrServiceRequirement(context));
-    } else {
-      builder.withRequirement(new ServiceRequirement(context));
-    }
+    // TODO(greyson): Handle this appropriately
+//    if (TextSecurePreferences.isWifiSmsEnabled(context)) {
+//      builder.withRequirement(new NetworkOrServiceRequirement(context));
+//    } else {
+//      builder.withRequirement(new ServiceRequirement(context));
+//    }
 
     return builder.create();
   }

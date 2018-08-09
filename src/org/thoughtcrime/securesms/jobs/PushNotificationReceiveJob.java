@@ -29,7 +29,7 @@ public class PushNotificationReceiveJob extends PushReceivedJob implements Injec
 
   public PushNotificationReceiveJob(Context context) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .withGroupId("__notification_received")
                                 .create());
   }

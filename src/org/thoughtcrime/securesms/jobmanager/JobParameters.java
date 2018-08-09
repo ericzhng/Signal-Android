@@ -16,12 +16,15 @@
  */
 package org.thoughtcrime.securesms.jobmanager;
 
+import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
 import org.thoughtcrime.securesms.jobmanager.requirements.Requirement;
+import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
+import org.thoughtcrime.securesms.jobs.requirements.NetworkOrServiceRequirement;
+import org.thoughtcrime.securesms.jobs.requirements.SqlCipherMigrationRequirement;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The set of parameters that describe a {@link org.thoughtcrime.securesms.jobmanager.Job}.
@@ -31,23 +34,75 @@ public class JobParameters implements Serializable {
   private static final long serialVersionUID = 4880456378402584584L;
 
   private final List<Requirement> requirements;
+  private final boolean           requiresNetwork;
+  private final boolean           requiresMasterSecret;
+  private final boolean           requiresSqlCipher;
   private final int               retryCount;
   private final long              retryUntil;
   private final String            groupId;
 
-  private JobParameters(List<Requirement> requirements,
-                        String groupId,
+  private JobParameters(String groupId,
+                        boolean requiresNetwork,
+                        boolean requiresMasterSecret,
+                        boolean requiresSqlCipher,
                         int retryCount,
                         long retryUntil)
   {
-    this.requirements    = requirements;
-    this.groupId         = groupId;
-    this.retryCount      = retryCount;
-    this.retryUntil      = retryUntil;
+    this.groupId              = groupId;
+    this.requirements         = Collections.emptyList();
+    this.requiresNetwork      = requiresNetwork;
+    this.requiresMasterSecret = requiresMasterSecret;
+    this.requiresSqlCipher    = requiresSqlCipher;
+    this.retryCount           = retryCount;
+    this.retryUntil           = retryUntil;
   }
 
-  public List<Requirement> getRequirements() {
-    return requirements;
+  public boolean requiresNetwork() {
+    return requiresNetwork || hasNetworkRequirement(requirements);
+  }
+
+  public boolean requiresMasterSecret() {
+    return requiresMasterSecret || hasMasterSecretRequirement(requirements);
+  }
+
+  public boolean requiresSqlCipher() {
+    return requiresSqlCipher || hasSqlCipherRequirement(requirements);
+  }
+
+  private boolean hasNetworkRequirement(List<Requirement> requirements) {
+    if (requirements == null || requirements.size() == 0) return false;
+
+    for (Requirement requirement : requirements) {
+      if (requirement instanceof NetworkRequirement || requirement instanceof NetworkOrServiceRequirement) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean hasMasterSecretRequirement(List<Requirement> requirements) {
+    if (requirements == null || requirements.size() == 0) return false;
+
+    for (Requirement requirement : requirements) {
+      if (requirement instanceof MasterSecretRequirement) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean hasSqlCipherRequirement(List<Requirement> requirements) {
+    if (requirements == null || requirements.size() == 0) return false;
+
+    for (Requirement requirement : requirements) {
+      if (requirement instanceof SqlCipherMigrationRequirement) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public int getRetryCount() {
@@ -70,19 +125,27 @@ public class JobParameters implements Serializable {
   }
 
   public static class Builder {
-    private List<Requirement> requirements    = new LinkedList<>();
-    private int               retryCount      = 100;
-    private long              retryDuration   = 0;
-    private String            groupId         = null;
+    private int               retryCount           = 100;
+    private long              retryDuration        = 0;
+    private String            groupId              = null;
+    private boolean           requiresNetwork      = false;
+    private boolean           requiresSqlCipher    = false;
+    private boolean           requiresMasterSecret = false;
 
-    /**
-     * Specify a {@link org.thoughtcrime.securesms.jobmanager.requirements.Requirement }that must be met
-     * before the Job is executed.  May be called multiple times to register multiple requirements.
-     * @param requirement The Requirement that must be met.
-     * @return the builder.
-     */
-    public Builder withRequirement(Requirement requirement) {
-      this.requirements.add(requirement);
+    public Builder withNetworkRequirement() {
+      requiresNetwork = true;
+      return this;
+    }
+
+    @Deprecated
+    public Builder withMasterSecretRequirement() {
+      requiresMasterSecret = true;
+      return this;
+    }
+
+    @Deprecated
+    public Builder withSqlCipherRequirement() {
+      requiresSqlCipher = true;
       return this;
     }
 
@@ -99,6 +162,11 @@ public class JobParameters implements Serializable {
       return this;
     }
 
+    /**
+     * Specify for how long we should keep retrying this job. Ignored if retryCount is set.
+     * @param duration The duration (in ms) for how long we should keep retrying this job for.
+     * @return the builder
+     */
     public Builder withRetryDuration(long duration) {
       this.retryDuration = duration;
       this.retryCount    = 0;
@@ -121,7 +189,7 @@ public class JobParameters implements Serializable {
      * @return the JobParameters instance that describes a Job.
      */
     public JobParameters create() {
-      return new JobParameters(requirements, groupId, retryCount, System.currentTimeMillis() + retryDuration);
+      return new JobParameters(groupId, requiresNetwork, requiresMasterSecret, requiresSqlCipher, retryCount, System.currentTimeMillis() + retryDuration);
     }
   }
 }

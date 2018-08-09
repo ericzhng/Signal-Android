@@ -5,17 +5,18 @@ import android.support.annotation.Nullable;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.jobmanager.dependencies.ContextDependent;
-import org.thoughtcrime.securesms.jobmanager.requirements.Requirement;
-
-import java.util.List;
+import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
+import org.thoughtcrime.securesms.jobs.requirements.SqlCipherMigrationRequirement;
 
 import androidx.work.Data;
 import androidx.work.Worker;
 
 public abstract class Job extends Worker {
 
-  static final String KEY_RETRY_COUNT = "Job_retry_count";
-  static final String KEY_RETRY_UNTIL = "Job_retry_until";
+  static final String KEY_RETRY_COUNT            = "Job_retry_count";
+  static final String KEY_RETRY_UNTIL            = "Job_retry_until";
+  static final String KEY_REQUIRES_MASTER_SECRET = "Job_requires_master_secret";
+  static final String KEY_REQUIRES_SQLCIPHER     = "Job_requires_sqlcipher";
 
   private final JobParameters jobParameters;
 
@@ -36,7 +37,7 @@ public abstract class Job extends Worker {
 
     try {
       if (withinRetryLimits(data)) {
-        if (requirementsMet()) {
+        if (requirementsMet(data)) {
           onRun();
           return Result.SUCCESS;
         } else {
@@ -89,10 +90,6 @@ public abstract class Job extends Worker {
    */
   protected void initialize(Data data) { }
 
-  public List<Requirement> getRequirements() {
-    return jobParameters.getRequirements();
-  }
-
   /**
    * Called to actually execute the job.
    * @throws Exception
@@ -128,15 +125,18 @@ public abstract class Job extends Worker {
     return Result.RETRY;
   }
 
-  private boolean requirementsMet() {
-    if (jobParameters == null) return true;
+  private boolean requirementsMet(Data data) {
+    boolean met = true;
 
-    for (Requirement requirement : jobParameters.getRequirements()) {
-      if (!requirement.isPresent(this)) {
-        return false;
-      }
+    if (data.getBoolean(KEY_REQUIRES_MASTER_SECRET, false)) {
+      met &= new MasterSecretRequirement(getApplicationContext()).isPresent();
     }
-    return true;
+
+    if (data.getBoolean(KEY_REQUIRES_SQLCIPHER, false)) {
+      met &= new SqlCipherMigrationRequirement(getApplicationContext()).isPresent();
+    }
+
+    return met;
   }
 
   private boolean withinRetryLimits(Data data) {

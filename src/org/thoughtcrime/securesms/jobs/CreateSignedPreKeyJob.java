@@ -36,8 +36,8 @@ public class CreateSignedPreKeyJob extends MasterSecretJob implements Injectable
 
   public CreateSignedPreKeyJob(Context context) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withNetworkRequirement()
+                                .withMasterSecretRequirement()
                                 .withGroupId(CreateSignedPreKeyJob.class.getSimpleName())
                                 .create());
   }

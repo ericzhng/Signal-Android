@@ -50,7 +50,7 @@ public class RetrieveProfileAvatarJob extends ContextJob implements InjectableTy
   public RetrieveProfileAvatarJob(Context context, Recipient recipient, String profileAvatar) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(RetrieveProfileAvatarJob.class.getSimpleName() + recipient.getAddress().serialize())
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .create());
 
     this.recipient     = recipient;

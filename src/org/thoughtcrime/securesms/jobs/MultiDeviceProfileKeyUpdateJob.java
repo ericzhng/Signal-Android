@@ -43,7 +43,7 @@ public class MultiDeviceProfileKeyUpdateJob extends MasterSecretJob implements I
 
   public MultiDeviceProfileKeyUpdateJob(Context context) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .withGroupId(MultiDeviceProfileKeyUpdateJob.class.getSimpleName())
                                 .create());
   }

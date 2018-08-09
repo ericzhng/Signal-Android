@@ -39,8 +39,8 @@ public class MultiDeviceBlockedUpdateJob extends MasterSecretJob implements Inje
 
   public MultiDeviceBlockedUpdateJob(Context context) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withNetworkRequirement()
+                                .withMasterSecretRequirement()
                                 .withGroupId(MultiDeviceBlockedUpdateJob.class.getSimpleName())
                                 .create());
   }

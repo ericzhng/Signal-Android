@@ -32,7 +32,7 @@ public class RefreshAttributesJob extends ContextJob implements InjectableType {
 
   public RefreshAttributesJob(Context context) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .withGroupId(RefreshAttributesJob.class.getName())
                                 .create());
   }

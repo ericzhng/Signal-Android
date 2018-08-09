@@ -70,8 +70,8 @@ public class MmsSendJob extends SendJob {
   public MmsSendJob(Context context, long messageId) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId("mms-operation")
-                                .withRequirement(new NetworkRequirement(context))
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withNetworkRequirement()
+                                .withMasterSecretRequirement()
                                 .create());
 
     this.messageId = messageId;

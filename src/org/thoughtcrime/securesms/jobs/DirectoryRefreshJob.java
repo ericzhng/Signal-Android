@@ -44,7 +44,7 @@ public class DirectoryRefreshJob extends ContextJob {
   {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(DirectoryRefreshJob.class.getSimpleName())
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .create());
 
     this.recipient        = recipient;

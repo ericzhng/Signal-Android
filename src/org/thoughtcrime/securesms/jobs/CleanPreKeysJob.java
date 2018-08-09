@@ -45,7 +45,7 @@ public class CleanPreKeysJob extends MasterSecretJob implements InjectableType {
   public CleanPreKeysJob(Context context) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(CleanPreKeysJob.class.getSimpleName())
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withMasterSecretRequirement()
                                 .withRetryCount(5)
                                 .create());
   }

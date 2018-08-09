@@ -39,8 +39,8 @@ public class RefreshPreKeysJob extends MasterSecretJob implements InjectableType
   public RefreshPreKeysJob(Context context) {
     super(context, JobParameters.newBuilder()
                                 .withGroupId(RefreshPreKeysJob.class.getSimpleName())
-                                .withRequirement(new NetworkRequirement(context))
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withNetworkRequirement()
+                                .withMasterSecretRequirement()
                                 .withRetryCount(5)
                                 .create());
   }

@@ -39,7 +39,7 @@ public class SmsSentJob extends MasterSecretJob {
 
   public SmsSentJob(Context context, long messageId, String action, int result) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withMasterSecretRequirement()
                                 .create());
 
     this.messageId = messageId;

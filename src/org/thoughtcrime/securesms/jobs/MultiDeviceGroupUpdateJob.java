@@ -49,8 +49,8 @@ public class MultiDeviceGroupUpdateJob extends MasterSecretJob implements Inject
 
   public MultiDeviceGroupUpdateJob(Context context) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
-                                .withRequirement(new MasterSecretRequirement(context))
+                                .withNetworkRequirement()
+                                .withMasterSecretRequirement()
                                 .withGroupId(MultiDeviceGroupUpdateJob.class.getSimpleName())
                                 .create());
   }

@@ -16,7 +16,6 @@
  */
 package org.thoughtcrime.securesms.jobmanager.persistence;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -24,7 +23,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import org.thoughtcrime.securesms.jobmanager.EncryptionKeys;
 import org.thoughtcrime.securesms.jobmanager.Job;
-import org.thoughtcrime.securesms.jobmanager.dependencies.AggregateDependencyInjector;
 import org.thoughtcrime.securesms.logging.Log;
 
 import java.io.IOException;
@@ -46,27 +44,13 @@ public class PersistentStorage {
   private final Context                     context;
   private final DatabaseHelper              databaseHelper;
   private final JobSerializer               jobSerializer;
-  private final AggregateDependencyInjector dependencyInjector;
 
   public PersistentStorage(Context context, String name,
-                           JobSerializer serializer,
-                           AggregateDependencyInjector dependencyInjector)
+                           JobSerializer serializer)
   {
     this.databaseHelper     = new DatabaseHelper(context, "_jobqueue-" + name);
     this.context            = context;
     this.jobSerializer      = serializer;
-    this.dependencyInjector = dependencyInjector;
-  }
-
-  public void store(Job job) throws IOException {
-  }
-
-  public List<Job> getAllUnencrypted() {
-    return getJobs(null, ENCRYPTED + " = 0");
-  }
-
-  public List<Job> getAllEncrypted(EncryptionKeys keys) {
-    return getJobs(keys, ENCRYPTED + " = 1");
   }
 
   private List<Job> getJobs(EncryptionKeys keys, String where) {
@@ -84,9 +68,6 @@ public class PersistentStorage {
 
         try{
           Job job = jobSerializer.deserialize(keys, encrypted, item);
-
-          dependencyInjector.injectDependencies(context, job);
-
           results.add(job);
         } catch (IOException e) {
           Log.w("PersistentStore", e);

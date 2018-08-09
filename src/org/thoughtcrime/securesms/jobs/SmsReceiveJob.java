@@ -44,7 +44,7 @@ public class SmsReceiveJob extends ContextJob {
 
   public SmsReceiveJob(@NonNull Context context, @Nullable Object[] pdus, int subscriptionId) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new SqlCipherMigrationRequirement(context))
+                                .withSqlCipherRequirement()
                                 .create());
 
     this.pdus           = pdus;

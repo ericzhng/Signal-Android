@@ -45,7 +45,7 @@ public class SendReadReceiptJob extends ContextJob implements InjectableType {
 
   public SendReadReceiptJob(Context context, Address address, List<Long> messageIds) {
     super(context, JobParameters.newBuilder()
-                                .withRequirement(new NetworkRequirement(context))
+                                .withNetworkRequirement()
                                 .create());
 
     this.address    = address.serialize();
