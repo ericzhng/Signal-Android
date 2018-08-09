@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.jobs;
 
 
 import android.content.Context;
-import android.support.annotation.Keep;
 
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -10,7 +9,6 @@ import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
@@ -36,7 +34,6 @@ public class MultiDeviceProfileKeyUpdateJob extends MasterSecretJob implements I
 
   @Inject transient SignalServiceMessageSender messageSender;
 
-  @Keep
   public MultiDeviceProfileKeyUpdateJob() {
     super(null, null);
   }

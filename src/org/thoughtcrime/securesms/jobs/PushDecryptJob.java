@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -99,7 +98,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import androidx.work.Data;
 
@@ -115,7 +113,6 @@ public class PushDecryptJob extends ContextJob {
   private long messageId;
   private long smsMessageId;
 
-  @Keep
   public PushDecryptJob() {
     super(null, null);
   }

@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.jobs;
 
 
 import android.content.Context;
-import android.support.annotation.Keep;
 
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -10,7 +9,6 @@ import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.IdentityDatabase.VerifiedStatus;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
 import org.thoughtcrime.securesms.util.Base64;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.IdentityKey;
@@ -46,7 +44,6 @@ public class MultiDeviceVerifiedUpdateJob extends ContextJob implements Injectab
   private VerifiedStatus verifiedStatus;
   private long           timestamp;
 
-  @Keep
   public MultiDeviceVerifiedUpdateJob() {
     super(null, null);
   }

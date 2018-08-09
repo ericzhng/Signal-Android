@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import org.thoughtcrime.securesms.logging.Log;
@@ -16,8 +15,6 @@ import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.events.PartProgressEvent;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
-import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
 import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.util.AttachmentUtil;
@@ -56,7 +53,6 @@ public class AttachmentDownloadJob extends MasterSecretJob implements Injectable
   private long    partUniqueId;
   private boolean manual;
 
-  @Keep
   public AttachmentDownloadJob() {
     super(null, null);
   }

@@ -1,12 +1,10 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
 import org.thoughtcrime.securesms.util.GroupUtil;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
@@ -36,7 +34,6 @@ public class RequestGroupInfoJob extends ContextJob implements InjectableType {
   private String source;
   private byte[] groupId;
 
-  @Keep
   public RequestGroupInfoJob() {
     super(null, null);
   }

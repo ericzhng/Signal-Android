@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.jobs;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.telephony.SmsManager;
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -13,7 +12,6 @@ import org.thoughtcrime.securesms.database.NoSuchMessageException;
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.service.SmsDeliveryListener;
 
@@ -32,7 +30,6 @@ public class SmsSentJob extends MasterSecretJob {
   private String action;
   private int    result;
 
-  @Keep
   public SmsSentJob() {
     super(null, null);
   }

@@ -2,11 +2,9 @@ package org.thoughtcrime.securesms.jobs;
 
 
 import android.content.Context;
-import android.support.annotation.Keep;
 
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
 import org.thoughtcrime.securesms.logging.Log;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
@@ -33,7 +31,6 @@ public class MultiDeviceReadReceiptUpdateJob extends ContextJob implements Injec
 
   private boolean enabled;
 
-  @Keep
   public MultiDeviceReadReceiptUpdateJob() {
     super(null, null);
   }

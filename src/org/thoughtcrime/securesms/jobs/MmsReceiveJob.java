@@ -3,7 +3,6 @@ package org.thoughtcrime.securesms.jobs;
 import android.content.Context;
 import org.thoughtcrime.securesms.logging.Log;
 
-import android.support.annotation.Keep;
 import android.util.Pair;
 
 import com.google.android.mms.pdu_alt.GenericPdu;
@@ -36,7 +35,6 @@ public class MmsReceiveJob extends ContextJob {
   private byte[] data;
   private int    subscriptionId;
 
-  @Keep
   public MmsReceiveJob() {
     super(null, null);
   }

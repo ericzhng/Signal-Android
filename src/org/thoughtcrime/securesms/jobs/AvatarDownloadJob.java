@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import org.thoughtcrime.securesms.crypto.MasterSecret;
@@ -11,8 +10,6 @@ import org.thoughtcrime.securesms.database.GroupDatabase;
 import org.thoughtcrime.securesms.database.GroupDatabase.GroupRecord;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
-import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.AttachmentStreamUriLoader.AttachmentModel;
 import org.thoughtcrime.securesms.util.BitmapDecodingException;
@@ -46,7 +43,6 @@ public class AvatarDownloadJob extends MasterSecretJob implements InjectableType
 
   private byte[] groupId;
 
-  @Keep
   public AvatarDownloadJob() {
     super(null, null);
   }

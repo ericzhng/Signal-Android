@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -9,7 +8,6 @@ import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.crypto.PreKeyUtil;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
 import org.whispersystems.libsignal.InvalidKeyIdException;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.state.SignedPreKeyStore;
@@ -37,7 +35,6 @@ public class CleanPreKeysJob extends MasterSecretJob implements InjectableType {
   @Inject transient SignalServiceAccountManager accountManager;
   @Inject transient SignedPreKeyStoreFactory signedPreKeyStoreFactory;
 
-  @Keep
   public CleanPreKeysJob() {
     super(null, null);
   }

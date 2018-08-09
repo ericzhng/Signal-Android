@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -48,7 +47,6 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
 
   private long messageId;
 
-  @Keep
   public PushMediaSendJob() {
     super(null, null);
   }

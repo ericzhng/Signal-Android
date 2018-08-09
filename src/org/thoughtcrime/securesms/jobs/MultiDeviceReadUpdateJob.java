@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,8 +10,6 @@ import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.MessagingDatabase.SyncMessageId;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
-import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
 import org.thoughtcrime.securesms.util.JsonUtils;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
@@ -42,7 +39,6 @@ public class MultiDeviceReadUpdateJob extends MasterSecretJob implements Injecta
 
   @Inject transient SignalServiceMessageSender messageSender;
 
-  @Keep
   public MultiDeviceReadUpdateJob() {
     super(null, null);
   }

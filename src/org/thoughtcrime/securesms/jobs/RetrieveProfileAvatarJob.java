@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.jobs;
 
 
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.text.TextUtils;
 
 import org.thoughtcrime.securesms.database.Address;
@@ -12,7 +11,6 @@ import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.util.Util;
@@ -42,7 +40,6 @@ public class RetrieveProfileAvatarJob extends ContextJob implements InjectableTy
   private String    profileAvatar;
   private Recipient recipient;
 
-  @Keep
   public RetrieveProfileAvatarJob() {
     super(null, null);
   }

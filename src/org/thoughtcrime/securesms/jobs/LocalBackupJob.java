@@ -3,7 +3,6 @@ package org.thoughtcrime.securesms.jobs;
 
 import android.Manifest;
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import org.thoughtcrime.securesms.logging.Log;
 
@@ -25,13 +24,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 public class LocalBackupJob extends ContextJob {
 
   private static final String TAG = LocalBackupJob.class.getSimpleName();
 
-  @Keep
   public LocalBackupJob() {
     super(null, null);
   }
